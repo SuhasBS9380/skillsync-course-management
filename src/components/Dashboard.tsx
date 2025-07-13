@@ -61,7 +61,7 @@ export const Dashboard = () => {
       <div className="relative space-y-12 py-12">
         <div className="text-center space-y-4">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
-            Dashboard
+            Admin Dashboard
           </h1>
           <p className="text-text-secondary text-xl max-w-2xl mx-auto leading-relaxed">
             Welcome back! Here's an overview of your course management platform.

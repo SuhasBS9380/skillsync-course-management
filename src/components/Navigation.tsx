@@ -26,12 +26,7 @@ export const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                CourseAdmin
-              </h1>
-            </div>
-            <div className="hidden sm:ml-8 sm:flex sm:space-x-2">
+            <div className="flex space-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
