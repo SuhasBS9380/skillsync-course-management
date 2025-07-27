@@ -1,6 +1,7 @@
 import { Users, BookOpen, GraduationCap, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 interface StatsCardProps {
   title: string;
@@ -14,8 +15,8 @@ const StatsCard = ({ title, value, icon: Icon, onClick }: StatsCardProps) => (
     className="group relative overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.02] bg-white border-0 shadow-lg hover:shadow-2xl"
     onClick={onClick}
   >
-    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full blur-3xl -translate-y-16 translate-x-16" />
+    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-full blur-3xl -translate-y-16 translate-x-16" />
     
     <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-4 pt-8">
       <div className="space-y-2">
@@ -27,7 +28,7 @@ const StatsCard = ({ title, value, icon: Icon, onClick }: StatsCardProps) => (
         </div>
       </div>
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-2xl blur-md opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-2xl blur-md opacity-40 group-hover:opacity-60 transition-opacity duration-300" />
         <div className="relative p-4 bg-gradient-to-br from-primary to-secondary rounded-2xl shadow-lg">
           <Icon className="h-8 w-8 text-white" />
         </div>
@@ -40,35 +41,50 @@ const StatsCard = ({ title, value, icon: Icon, onClick }: StatsCardProps) => (
 
 export const Dashboard = () => {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    totalLearners: "-",
+    totalTrainees: "-",
+    totalCourses: "-",
+    activeCourses: "-"
+  });
+  useEffect(() => {
+    fetch("http://localhost:8081/api/admin/dashboard/summary")
+      .then(res => res.json())
+      .then(data => setStats({
+        totalLearners: data.totalLearners?.toString() ?? "-",
+        totalTrainees: data.totalTrainers?.toString() ?? "-",
+        totalCourses: data.totalCourses?.toString() ?? "-",
+        activeCourses: data.activeCourses?.toString() ?? "-"
+      }))
+      .catch(() => setStats({
+        totalLearners: "-",
+        totalTrainees: "-",
+        totalCourses: "-",
+        activeCourses: "-"
+      }));
+  }, []);
   
-  // Mock data - in real app this would come from API
-  const stats = {
-    totalLearners: "324",
-    totalTrainees: "156", 
-    totalCourses: "28",
-    activeCourses: "18"
-  };
-
+  // Background Design
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen w-full">
       {/* Background Design */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-surface to-background" />
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-br from-secondary/8 to-accent/8 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 left-0 w-64 h-64 bg-gradient-to-br from-accent/5 to-primary/5 rounded-full blur-2xl" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/40 to-secondary/40 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-br from-secondary/35 to-accent/35 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 left-0 w-64 h-64 bg-gradient-to-br from-accent/30 to-primary/30 rounded-full blur-2xl" />
       
       {/* Content */}
-      <div className="relative space-y-12 py-12">
+      <div className="relative space-y-12 py-12 px-4 w-full">
         <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-700 via-indigo-600 to-purple-700 bg-clip-text text-transparent mb-4 drop-shadow-lg">
             Admin Dashboard
           </h1>
-          <p className="text-text-secondary text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-700 text-xl max-w-2xl mx-auto leading-relaxed font-medium">
             Welcome back! Here's an overview of your course management platform.
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 px-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 w-full">
           <StatsCard
             title="Total Learners"
             value={stats.totalLearners}

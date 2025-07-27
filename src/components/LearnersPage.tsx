@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Mail, Phone, Award } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,70 +23,28 @@ interface Learner {
 
 export const LearnersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [learners, setLearners] = useState<Learner[]>([]);
 
-  // Mock data - in real app this would come from API
-  const [learners] = useState<Learner[]>([
-    {
-      id: "1",
-      name: "John Doe",
-      email: "john.doe@email.com",
-      phone: "+1 234-567-8900",
-      currentCourse: "React Fundamentals",
-      score: 85,
-      enrollmentDate: "2024-01-15",
-      status: "active",
-      personalDetails: {
-        age: 28,
-        location: "New York, USA",
-        experience: "2 years in web development"
-      }
-    },
-    {
-      id: "2",
-      name: "Sarah Johnson",
-      email: "sarah.j@email.com", 
-      phone: "+1 234-567-8901",
-      currentCourse: "Advanced JavaScript",
-      score: 92,
-      enrollmentDate: "2024-01-20",
-      status: "active",
-      personalDetails: {
-        age: 25,
-        location: "California, USA",
-        experience: "Fresh graduate in Computer Science"
-      }
-    },
-    {
-      id: "3",
-      name: "Mike Chen",
-      email: "mike.chen@email.com",
-      phone: "+1 234-567-8902", 
-      currentCourse: "React Fundamentals",
-      score: 78,
-      enrollmentDate: "2024-01-10",
-      status: "active",
-      personalDetails: {
-        age: 32,
-        location: "Texas, USA",
-        experience: "5 years in backend development"
-      }
-    },
-    {
-      id: "4",
-      name: "Emily Davis",
-      email: "emily.davis@email.com",
-      phone: "+1 234-567-8903",
-      currentCourse: "Node.js Backend Development",
-      score: 88,
-      enrollmentDate: "2024-02-01",
-      status: "active",
-      personalDetails: {
-        age: 29,
-        location: "Florida, USA", 
-        experience: "3 years in frontend development"
-      }
-    }
-  ]);
+  useEffect(() => {
+    fetch("http://localhost:8081/api/admin/learners")
+      .then(res => res.json())
+      .then(data => setLearners(data.map((l: any) => ({
+        id: l[0]?.toString() ?? "",
+        name: `${l[1]} ${l[2]}`,
+        email: l[3],
+        phone: l[4],
+        currentCourse: l[8] ?? "",
+        score: l[9] ?? 0,
+        enrollmentDate: l[10] ?? "",
+        status: "active",
+        personalDetails: {
+          age: l[5],
+          location: l[6],
+          experience: l[7]
+        }
+      }))))
+      .catch(() => setLearners([]));
+  }, []);
 
   const filteredLearners = learners.filter(learner =>
     learner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -115,11 +73,11 @@ export const LearnersPage = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 w-full">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Learners</h1>
         <p className="text-text-secondary mt-2">
-          Manage and monitor all enrolled learners and their progress.
+          Search and manage learner profiles and progress.
         </p>
       </div>
 

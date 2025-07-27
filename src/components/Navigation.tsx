@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, BookOpen, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/ui/logo";
 
 const navItems = [
   {
@@ -23,9 +24,15 @@ const navItems = [
 export const Navigation = () => {
   return (
     <nav className="bg-surface border-b border-border shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
+      <div className="w-full px-4">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo - Leftmost position */}
+          <div className="flex-shrink-0">
+            <Logo size="lg" />
+          </div>
+          
+          {/* Navigation Items - Centered */}
+          <div className="flex-1 flex justify-center">
             <div className="flex space-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;

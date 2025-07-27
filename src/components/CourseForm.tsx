@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,8 +31,38 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
     startDate: course?.startDate || "",
     endDate: course?.endDate || "",
     maxCapacity: course?.maxCapacity || 20,
-    courseLinks: course?.courseLinks || [""],
+    courseLinks: course?.courseLinks || [""]
   });
+  const lastLoadedCourseId = useRef<string | undefined>(undefined);
+
+  // Keep formData in sync with course prop
+  useEffect(() => {
+    setFormData({
+      title: course?.title || "",
+      description: course?.description || "",
+      startDate: course?.startDate || "",
+      endDate: course?.endDate || "",
+      maxCapacity: course?.maxCapacity || 20,
+      courseLinks: course?.courseLinks || [""]
+    });
+  }, [course]);
+
+  // Fetch course materials if editing and only if course id changes
+  useEffect(() => {
+    if (course && course.id && lastLoadedCourseId.current !== course.id) {
+      lastLoadedCourseId.current = course.id;
+      fetch(`http://localhost:8081/api/admin/courses/${course.id}/materials`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            setFormData(prev => ({
+              ...prev,
+              courseLinks: data.map((m: any) => m.materialUrl)
+            }));
+          }
+        });
+    }
+  }, [course]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -65,37 +95,59 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const filteredLinks = formData.courseLinks.filter(link => link.trim() !== "");
-    onSave({
-      ...formData,
-      courseLinks: filteredLinks
+    // Save course first
+    const method = course ? "PUT" : "POST";
+    const url = course
+      ? `http://localhost:8081/api/admin/courses/${course.id}`
+      : "http://localhost:8081/api/admin/courses";
+    const courseRes = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,
+        courseLinks: undefined // Don't send links in main course object
+      })
     });
+    const savedCourse = await courseRes.json();
+    // Save materials
+    if (filteredLinks.length > 0) {
+      await Promise.all(filteredLinks.map(link =>
+        fetch(`http://localhost:8081/api/admin/courses/${savedCourse.courseId || savedCourse.id}/materials`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ materialUrl: link })
+        })
+      ));
+    }
+    onSave({ ...formData, courseLinks: filteredLinks });
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-4">
-        <Button
-          variant="outline"
-          onClick={onCancel}
-          className="flex items-center"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Courses
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            {course ? "Edit Course" : "Create New Course"}
-          </h1>
-          <p className="text-text-secondary mt-2">
-            {course ? "Update course details and settings" : "Fill in the details to create a new course"}
-          </p>
+    <div className="flex justify-center items-start min-h-screen py-8">
+      <div className="w-full max-w-4xl space-y-6">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            className="flex items-center"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Courses
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              {course ? "Edit Course" : "Create New Course"}
+            </h1>
+            <p className="text-text-secondary mt-2">
+              {course ? "Update course details and settings" : "Fill in the details to create a new course"}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <Card className="max-w-2xl">
+        <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-foreground">Course Information</CardTitle>
         </CardHeader>
@@ -206,6 +258,7 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
           </form>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 };

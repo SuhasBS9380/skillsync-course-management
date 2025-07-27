@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Edit, Users, Calendar, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CourseForm } from "./CourseForm";
+import { TrainerAssignmentModal } from "@/components/ui/trainer-assignment-modal";
 
 interface Course {
   id: string;
+  courseId?: number;
   title: string;
   description: string;
   startDate: string;
@@ -15,48 +17,42 @@ interface Course {
   maxCapacity: number;
   status: "active" | "upcoming" | "completed";
   courseLinks: string[];
+  assignedTrainer?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 export const CoursesPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [showTrainerModal, setShowTrainerModal] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
 
-  // Mock data - in real app this would come from API
-  const [courses] = useState<Course[]>([
-    {
-      id: "1",
-      title: "React Fundamentals",
-      description: "Learn the basics of React including components, props, and state management.",
-      startDate: "2024-02-01",
-      endDate: "2024-03-15",
-      enrolledCount: 24,
-      maxCapacity: 30,
-      status: "active",
-      courseLinks: ["https://reactjs.org/docs", "https://github.com/course-materials"]
-    },
-    {
-      id: "2", 
-      title: "Advanced JavaScript",
-      description: "Deep dive into advanced JavaScript concepts, async programming, and modern ES6+ features.",
-      startDate: "2024-02-15",
-      endDate: "2024-04-01",
-      enrolledCount: 18,
-      maxCapacity: 25,
-      status: "active",
-      courseLinks: ["https://javascript.info", "https://mdn.mozilla.org"]
-    },
-    {
-      id: "3",
-      title: "Node.js Backend Development", 
-      description: "Build scalable backend applications using Node.js, Express, and databases.",
-      startDate: "2024-03-01",
-      endDate: "2024-04-30",
-      enrolledCount: 0,
-      maxCapacity: 20,
-      status: "upcoming",
-      courseLinks: ["https://nodejs.org/docs"]
-    }
-  ]);
+  useEffect(() => {
+    fetch("http://localhost:8081/api/admin/courses/with-trainers")
+      .then(res => res.json())
+      .then(data => setCourses(data.map((c: any) => ({
+        id: c[0]?.toString() ?? "",
+        courseId: c[0], // course_id
+        title: c[1], // title
+        description: c[2], // description
+        startDate: c[3], // start_date
+        endDate: c[4], // end_date
+        enrolledCount: 0, // You may need to fetch this separately
+        maxCapacity: c[5], // max_capacity
+        status: c[6], // status
+        courseLinks: [], // You may need to fetch materials separately
+        assignedTrainer: c[7] ? { // Check if trainer exists
+          firstName: c[7], // first_name
+          lastName: c[8], // last_name
+          email: c[9] // email
+        } : undefined
+      }))))
+      .catch(() => setCourses([]));
+  }, [showForm]);
 
   const getStatusColor = (status: Course["status"]) => {
     switch (status) {
@@ -77,6 +73,42 @@ export const CoursesPage = () => {
     setShowForm(true);
   };
 
+  const handleDeleteCourse = (id: string) => {
+    fetch(`http://localhost:8081/api/admin/courses/${id}`, { method: "DELETE" })
+      .then(() => setCourses(courses => courses.filter(c => c.id !== id && c.courseId?.toString() !== id)));
+  };
+
+  const handleAssignTrainer = (course: Course) => {
+    setSelectedCourse(course);
+    setShowTrainerModal(true);
+  };
+
+  const handleTrainerAssigned = (trainerId: number) => {
+    // Refresh the courses list to show the updated trainer assignment
+    console.log(`Trainer ${trainerId} assigned to course ${selectedCourse?.id}`);
+    // Trigger a refresh of the courses list
+    fetch("http://localhost:8081/api/admin/courses/with-trainers")
+      .then(res => res.json())
+      .then(data => setCourses(data.map((c: any) => ({
+        id: c[0]?.toString() ?? "",
+        courseId: c[0], // course_id
+        title: c[1], // title
+        description: c[2], // description
+        startDate: c[3], // start_date
+        endDate: c[4], // end_date
+        enrolledCount: 0, // You may need to fetch this separately
+        maxCapacity: c[5], // max_capacity
+        status: c[6], // status
+        courseLinks: [], // You may need to fetch materials separately
+        assignedTrainer: c[7] ? { // Check if trainer exists
+          firstName: c[7], // first_name
+          lastName: c[8], // last_name
+          email: c[9] // email
+        } : undefined
+      }))))
+      .catch(() => setCourses([]));
+  };
+
   if (showForm) {
     return (
       <CourseForm
@@ -85,18 +117,28 @@ export const CoursesPage = () => {
           setShowForm(false);
           setEditingCourse(null);
         }}
-        onSave={(courseData) => {
-          // In real app, this would call API
-          console.log("Saving course:", courseData);
-          setShowForm(false);
-          setEditingCourse(null);
+        onSave={courseData => {
+          const method = editingCourse ? "PUT" : "POST";
+          const url = editingCourse
+            ? `http://localhost:8081/api/admin/courses/${editingCourse.courseId || editingCourse.id}`
+            : "http://localhost:8081/api/admin/courses";
+          fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(courseData)
+          })
+            .then(res => res.json())
+            .then(() => {
+              setShowForm(false);
+              setEditingCourse(null);
+            });
         }}
       />
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 w-full">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Courses</h1>
@@ -135,6 +177,12 @@ export const CoursesPage = () => {
                   <Users className="w-4 h-4 mr-2" />
                   {course.enrolledCount}/{course.maxCapacity} enrolled
                 </div>
+                {course.assignedTrainer && (
+                  <div className="flex items-center text-sm text-primary">
+                    <Users className="w-4 h-4 mr-2" />
+                    Trainer: {course.assignedTrainer.firstName} {course.assignedTrainer.lastName}
+                  </div>
+                )}
               </div>
 
               {course.courseLinks.length > 0 && (
@@ -168,16 +216,30 @@ export const CoursesPage = () => {
                 <Button
                   variant="secondary"
                   size="sm"
+                  onClick={() => handleAssignTrainer(course)}
                   className="flex-1"
                 >
                   <Users className="w-4 h-4 mr-2" />
-                  Assign
+                  {course.assignedTrainer ? "Change Trainer" : "Assign"}
                 </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+      
+      {selectedCourse && (
+        <TrainerAssignmentModal
+          courseId={parseInt(selectedCourse.courseId?.toString() || selectedCourse.id)}
+          courseTitle={selectedCourse.title}
+          isOpen={showTrainerModal}
+          onClose={() => {
+            setShowTrainerModal(false);
+            setSelectedCourse(null);
+          }}
+          onAssign={handleTrainerAssigned}
+        />
+      )}
     </div>
   );
 };
