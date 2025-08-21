@@ -71,6 +71,8 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Fonts */
+    --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
   }
 
   .dark {
@@ -118,6 +120,21 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4 {
+    @apply text-foreground;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    line-height: 1.7;
+  }
+
+  label {
+    font-weight: 500;
   }
 }

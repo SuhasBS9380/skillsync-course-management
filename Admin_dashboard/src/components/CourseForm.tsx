@@ -126,8 +126,8 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
   };
 
   return (
-    <div className="flex justify-center items-start min-h-screen py-8">
-      <div className="w-full max-w-4xl space-y-6">
+    <div className="flex justify-center items-start min-h-screen py-10 px-4">
+      <div className="w-full max-w-5xl space-y-8">
         <div className="flex items-center space-x-4">
           <Button
             variant="outline"
@@ -137,21 +137,21 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Courses
           </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               {course ? "Edit Course" : "Create New Course"}
             </h1>
-            <p className="text-text-secondary mt-2">
+            <p className="text-text-secondary">
               {course ? "Update course details and settings" : "Fill in the details to create a new course"}
             </p>
           </div>
         </div>
 
-        <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-foreground">Course Information</CardTitle>
+        <Card className="w-full shadow-[var(--shadow-card)]">
+        <CardHeader className="border-b bg-gradient-to-b from-white to-[hsl(var(--muted))]">
+          <CardTitle className="text-xl font-semibold text-foreground">Course Information</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="title" className="text-foreground">Course Title</Label>
@@ -176,7 +176,7 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="startDate" className="text-foreground">Start Date</Label>
                 <Input
@@ -226,7 +226,7 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
               </div>
               
               {formData.courseLinks.map((link, index) => (
-                <div key={index} className="flex space-x-2">
+                <div key={index} className="flex gap-2">
                   <Input
                     value={link}
                     onChange={(e) => handleLinkChange(index, e.target.value)}
@@ -247,7 +247,7 @@ export const CourseForm = ({ course, onCancel, onSave }: CourseFormProps) => {
               ))}
             </div>
 
-            <div className="flex space-x-4 pt-6">
+            <div className="flex gap-4 pt-6">
               <Button type="submit" className="bg-primary hover:bg-primary/90">
                 {course ? "Update Course" : "Create Course"}
               </Button>

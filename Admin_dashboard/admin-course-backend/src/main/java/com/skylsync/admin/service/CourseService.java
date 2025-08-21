@@ -55,7 +55,8 @@ public class CourseService {
 
     public List<Object[]> getAllCoursesWithTrainerInfo() {
         String sql = "SELECT c.course_id, c.title, c.description, c.start_date, c.end_date, c.max_capacity, c.status, " +
-                    "u.first_name, u.last_name, u.email " +
+                    "u.first_name, u.last_name, u.email, " +
+                    "(SELECT COUNT(*) FROM enrollments e WHERE e.course_id = c.course_id) AS enrolled_count " +
                     "FROM courses c " +
                     "LEFT JOIN trainerscourses tc ON c.course_id = tc.course_id " +
                     "LEFT JOIN users u ON tc.trainer_user_id = u.user_id " +

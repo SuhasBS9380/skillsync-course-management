@@ -1,6 +1,7 @@
 package com.skylsync.admin.controller;
 
 import com.skylsync.admin.entity.Enrollment;
+import com.skylsync.admin.dto.CourseLearnerDTO;
 import com.skylsync.admin.service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,15 @@ public class EnrollmentController {
     @DeleteMapping("/{id}")
     public void deleteEnrollment(@PathVariable Integer id) {
         enrollmentService.deleteEnrollment(id);
+    }
+
+    @GetMapping("/course/{courseId}")
+    public List<Enrollment> getEnrollmentsByCourse(@PathVariable Integer courseId) {
+        return enrollmentService.getEnrollmentsByCourseId(courseId);
+    }
+
+    @GetMapping("/course/{courseId}/learners")
+    public List<CourseLearnerDTO> getCourseLearners(@PathVariable Integer courseId) {
+        return enrollmentService.getLearnersByCourseId(courseId);
     }
 } 
