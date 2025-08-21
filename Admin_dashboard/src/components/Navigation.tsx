@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Users } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/ui/logo";
 
@@ -18,6 +18,11 @@ const navItems = [
     title: "Learners",
     href: "/learners",
     icon: Users,
+  },
+  {
+    title: "Trainers",
+    href: "/trainers",
+    icon: UserCog,
   },
 ];
 
