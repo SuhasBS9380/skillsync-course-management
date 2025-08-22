@@ -1,4 +1,4 @@
-# 🎓 SkillSync Learning Management System
+# 🎓 SkillSync courese (Admin-Learning Management) System
 
 A comprehensive full-stack learning management platform built with React/TypeScript frontend and Spring Boot backend, designed for educational institutions to manage courses, trainers, learners, and certifications.
 
@@ -459,24 +459,7 @@ export default defineConfig({
    - Run `mvn clean install` to rebuild
    - Check Maven dependencies
 
-## 📝 Environment Variables
 
-For production deployment, consider using environment variables:
-
-```bash
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=3000
-DB_NAME_ADMIN=course_management
-DB_NAME_LEARNERS=course_manage
-DB_USERNAME=root
-DB_PASSWORD=your_password
-
-# Server Ports
-ADMIN_BACKEND_PORT=8081
-LEARNERS_PORT=7000
-FRONTEND_PORT=8080
-```
 
 
 
