@@ -326,34 +326,6 @@ cd learners && mvn spring-boot:run
 
 ## 📚 API Documentation
 
-### Admin Backend Endpoints
-
-#### Course Management
-- `GET /api/courses` - Get all courses
-- `POST /api/courses` - Create new course
-- `PUT /api/courses/{id}` - Update course
-- `DELETE /api/courses/{id}` - Delete course
-
-#### Trainer Management
-- `GET /api/trainers` - Get all trainers
-- `POST /api/trainers` - Create new trainer
-- `GET /api/trainers/{id}` - Get trainer details
-
-#### Learner Management
-- `GET /api/learners` - Get all learners
-- `GET /api/learners/{id}` - Get learner details
-
-#### Enrollment Management
-- `GET /api/enrollments` - Get all enrollments
-- `POST /api/enrollments` - Create enrollment
-
-### Learners Dashboard Routes
-- `/` - Landing page
-- `/login` - User authentication
-- `/dashboard` - Personal dashboard
-- `/my-courses` - Enrolled courses
-- `/certificates` - Earned certifications
-- `/profile` - User profile
 
 ## 📁 Project Structure
 
