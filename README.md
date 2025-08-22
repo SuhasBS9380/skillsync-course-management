@@ -1,4 +1,4 @@
-# 🎓 SkillSync course (admin,Learning) Management System
+# 🎓 SkillSync course (admin,Learners) Management System
 
 A comprehensive full-stack learning management platform built with React/TypeScript frontend and Spring Boot backend, designed for educational institutions to manage courses, trainers, learners, and certifications.
 
